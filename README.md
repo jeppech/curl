@@ -1,3 +1,1 @@
-Readme file for curl library
-
-Just messing around
+~README file for curl library~
