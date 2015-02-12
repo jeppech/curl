@@ -12,8 +12,8 @@ use Jeppech\Filter\Validate;
  * @author Jeppe Christiansen <jeppe@codr.dk>
  * @package Request
  */
-class Request {
-
+class Request
+{
     /**
      * Determines if the request should follow redirects
      *
@@ -68,7 +68,8 @@ class Request {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
 
         $this->cookie_file = tempnam("/tmp", "CURLCOOKIE");
 
@@ -162,8 +163,9 @@ class Request {
       */
     public function request($method, $url, $request_data = array())
     {
-        if (is_array($request_data))
+        if (is_array($request_data)) {
             $request_data = http_build_query($request_data, '', '&');
+        }
 
         $this->setRequestMethod($method);
 
@@ -206,8 +208,9 @@ class Request {
     {
         $option = strtoupper(str_replace("CURLOPT_", "", $option));
 
-        if (!defined("CURLOPT_$option"))
+        if (!defined("CURLOPT_$option")) {
             throw new \InvalidArgumentException("CURLOPT_$option is not a valid constant.");
+        }
 
         $this->request_options[constant("CURLOPT_$option")] = $value;
     }
@@ -222,8 +225,9 @@ class Request {
      */
     public function followRedirects($value)
     {
-        if (!is_bool($value) && !is_int($value))
+        if (!is_bool($value) && !is_int($value)) {
             throw new \InvalidArgumentException("Value must be type of boolean or integer");
+        }
 
         $this->follow_redirects = $value;
     }
@@ -234,7 +238,8 @@ class Request {
      * @param string $referer
      * @return type
      */
-    public function setReferer($referer) {
+    public function setReferer($referer)
+    {
         $this->referer = $referer;
     }
 
@@ -280,8 +285,9 @@ class Request {
     {
         $this->setRequestOption("URL", $url);
 
-        if (!empty($request_data))
+        if (!empty($request_data)) {
             $this->setRequestOption("POSTFIELDS", $request_data);
+        }
 
         $headers = array();
 

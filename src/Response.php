@@ -9,8 +9,8 @@ namespace Jeppech\Curl;
  * @author Jeppe Christiansen <jeppe@codr.dk>
  * @package Response
  */
-class Response {
-
+class Response
+{
     /**
      * Contains the message body, without the HTTP message
      *
@@ -95,8 +95,9 @@ class Response {
      */
     public function getRedirectData($index = false)
     {
-        if (is_int($index) && isset($this->redirect_messages[$index]))
+        if (is_int($index) && isset($this->redirect_messages[$index])) {
             return $this->redirect_messages[$index];
+        }
 
         return $this->redirect_messages;
     }
@@ -155,8 +156,9 @@ class Response {
     {
         preg_match("/HTTP\/\d\.\d\s(\d{3})/", $http_message, $code);
 
-        if (!empty($code))
+        if (!empty($code)) {
             return intval($code[1]);
+        }
 
         return 0;
     }
@@ -171,8 +173,9 @@ class Response {
     {
         preg_match("/(\d{3}.+)/", $http_message, $status);
 
-        if (!empty($status))
+        if (!empty($status)) {
             return $status[1];
+        }
 
         return null;
     }
@@ -187,8 +190,9 @@ class Response {
     {
         preg_match_all("/([a-z0-9-_]+):\s?(.+)\s?/im", $http_message, $headers);
 
-        if (!empty($headers))
+        if (!empty($headers)) {
             return array_combine($headers[1], $headers[2]);
+        }
 
         return null;
     }
@@ -201,8 +205,10 @@ class Response {
     private function getHttpMessage()
     {
         preg_match("/(HTTP\/\d\.\d.+)\r\n\r\n/ims", $this->raw_body, $http_message);
-        if (!empty($http_message))
+
+        if (!empty($http_message)) {
             return $http_message[1];
+        }
 
         return null;
     }
