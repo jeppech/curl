@@ -41,6 +41,7 @@ class Response
 
     /**
      * Contains all response headers
+     *
      * @var array
      */
     protected $headers = array();
@@ -69,19 +70,30 @@ class Response
     }
 
     /**
-     * Description
-     * @return type
+     * Returns HTTP status code
+     *
+     * @return int
      */
     public function getCode()
     {
         return $this->code;
     }
 
+    /**
+     * Return HTTP status message
+     *
+     * @return string
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * Return HTTP headers
+     *
+     * @return array
+     */
     public function getHeaders()
     {
         return $this->headers;
@@ -149,6 +161,7 @@ class Response
 
     /**
      * Return HTTP status code, when supplied with raw HTTP message
+     *
      * @param string $http_message
      * @return integer
      */

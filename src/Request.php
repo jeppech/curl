@@ -66,7 +66,10 @@ class Request
     /**
      * Instantiate the cURL object, and determine the User Agent.
      *
-     * @return void
+     * @param string $method
+     * @param string $url
+     * @param string|array
+     * @return Response|void
      */
     public function __construct()
     {
@@ -92,7 +95,7 @@ class Request
      *
      * @param string $url
      * @param string|array $request_data
-     * @return type
+     * @return Response
      */
     public function get($url, $request_data = array())
     {
@@ -109,7 +112,7 @@ class Request
      *
      * @param string $url
      * @param array $request_data
-     * @return type
+     * @return Response
      */
     public function post($url, $request_data = array())
     {
@@ -121,7 +124,7 @@ class Request
      *
      * @param string $url
      * @param array $request_data
-     * @return type
+     * @return Response
      */
     public function put($url, $request_data = array())
     {
@@ -133,7 +136,7 @@ class Request
      *
      * @param string $url
      * @param array $request_data
-     * @return type
+     * @return Response
      */
     public function head($url, $request_data = array())
     {
@@ -145,7 +148,7 @@ class Request
      *
      * @param string $url
      * @param array $request_data
-     * @return type
+     * @return Response
      */
     public function delete($url, $request_data = array())
     {
@@ -157,7 +160,7 @@ class Request
       * @param string $method
       * @param string $url
       * @param array $request_data
-      * @return type
+      * @return Response
       *
       * @throws InvalidArgumentException
       */
