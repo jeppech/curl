@@ -1,0 +1,46 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "f5d50dec61f6212769029cb94a7197d6",
+    "packages": [
+        {
+            "name": "jeppech/filter",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "http://git.codr.dk:2201/jeppech/filter.git",
+                "reference": "1a20063cfeee7ea29c96ab08f1932b6a0c976144"
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jeppech\\Filter\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Jeppe Christiansen",
+                    "email": "jeppe@codr.dk"
+                }
+            ],
+            "description": "Filtering and sanitizing methods",
+            "time": "2015-02-12 13:49:28"
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}
