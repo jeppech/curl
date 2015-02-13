@@ -1,4 +1,4 @@
-~README file for curl library~
+__README file for curl library__
 
 * [x] Completed task
 	* [ ] Not completed subtask
