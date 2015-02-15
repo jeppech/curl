@@ -2,7 +2,6 @@
 
 namespace Jeppech\Curl;
 
-use Jeppech\Curl\Response;
 use Jeppech\Filter\Validate;
 
 /**
@@ -19,7 +18,7 @@ class Request
      *
      * @var bool
      */
-    protected $follow_redirects = true;
+    protected $follow_redirects;
 
     /**
      * Referer header
@@ -63,31 +62,12 @@ class Request
      */
     protected $cookie_file;
 
-    /**
-     * Instantiate the cURL object, and determine the User Agent.
-     *
-     * @param string $method
-     * @param string $url
-     * @param string|array
-     * @return Response|void
-     */
     public function __construct()
     {
+        $this->cookie_file  = tempnam("/tmp", "CURLCOOKIE");
+        $this->user_agent   = $this->getUserAgent();
 
-        $this->cookie_file = tempnam("/tmp", "CURLCOOKIE");
-
-        if (isset($_SERVER["HTTP_USER_AGENT"]) && !empty($_SERVER["HTTP_USER_AGENT"])) {
-            $this->user_agent = $_SERVER["HTTP_USER_AGENT"];
-        } else {
-            $cURL = curl_version();
-            $this->user_agent = "cURL/{$cURL["version"]} PHP/".PHP_VERSION." (jeppech)";
-        }
-
-        $this->setRequestOption("HEADER", true);
-        $this->setRequestOption("RETURNTRANSFER", true);
-        $this->setRequestOption("USERAGENT", $this->user_agent);
-        $this->setRequestOption("COOKIEJAR", $this->cookie_file);
-        $this->setRequestOption("COOKIEFILE", $this->cookie_file);
+        $this->setPropertiesToDefaults();
     }
 
     /**
@@ -162,7 +142,7 @@ class Request
       * @param array $request_data
       * @return Response
       *
-      * @throws InvalidArgumentException
+      * @throws \InvalidArgumentException
       */
     public function request($method, $url, $request_data = array())
     {
@@ -178,8 +158,10 @@ class Request
             throw new \InvalidArgumentException("$url is not a valid URL.");
         }
 
-        $curl_response = curl_exec($this->handle);
-        return new Response($curl_response);
+        $response = $this->executeCurlRequest();
+        $this->setPropertiesToDefaults();
+
+        return new Response($response);
     }
 
     /**
@@ -201,11 +183,11 @@ class Request
     /**
      * Stores cURL request options into $this->request_options, `CURLOPT_` are automatically prepended.
      *
-     * @param constant $option
+     * @param string $option
      * @param string|array $value
      * @return void
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function setRequestOption($option, $value)
     {
@@ -222,9 +204,9 @@ class Request
      * Sets the CURLOPT_FOLLOWLOCATION to $value
      *
      * @param bool $value
-     * @return type
+     * @return void
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function followRedirects($value)
     {
@@ -239,11 +221,23 @@ class Request
      * Sets referer header in the HTTP request
      *
      * @param string $referer
-     * @return type
+     * @return void
      */
     public function setReferer($referer)
     {
         $this->referer = $referer;
+    }
+
+    /**
+     * Executes and stores curl request.
+     *
+     * @return string
+     */
+    protected function executeCurlRequest() {
+        $response = curl_exec($this->handle);
+        curl_close($this->handle);
+
+        return $response;
     }
 
     /**
@@ -303,5 +297,39 @@ class Request
 
         $this->handle = curl_init();
         curl_setopt_array($this->handle, $this->request_options);
+    }
+
+
+    /**
+     * Resets object to default options.
+     *
+     * @return void
+     */
+    protected function setPropertiesToDefaults()
+    {
+        $this->follow_redirects = true;
+        $this->request_options  = [];
+        $this->headers          = [];
+
+        $this->setRequestOption("HEADER", true);
+        $this->setRequestOption("RETURNTRANSFER", true);
+        $this->setRequestOption("USERAGENT", $this->user_agent);
+        $this->setRequestOption("COOKIEJAR", $this->cookie_file);
+        $this->setRequestOption("COOKIEFILE", $this->cookie_file);
+    }
+
+    /**
+     * Determines the user agent.
+     *
+     * @return string
+     */
+    protected function getUserAgent()
+    {
+        if (isset($_SERVER["HTTP_USER_AGENT"]) && !empty($_SERVER["HTTP_USER_AGENT"])) {
+            return $_SERVER["HTTP_USER_AGENT"];
+        } else {
+            $cURL = curl_version();
+            return "cURL/{$cURL["version"]} PHP/".PHP_VERSION." (jeppech/curl)";
+        }
     }
 }

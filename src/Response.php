@@ -105,7 +105,7 @@ class Response
      * @param integer $index
      * @return array
      */
-    public function getRedirectData($index = false)
+    public function getRedirectData($index)
     {
         if (is_int($index) && isset($this->redirect_messages[$index])) {
             return $this->redirect_messages[$index];
