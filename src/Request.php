@@ -206,6 +206,15 @@ class Request
     }
 
     /**
+     * Do not fetch the body
+     * 
+     * @return void
+     */
+    public function noBody() {
+        $this->setRequestOption("NOBODY", 1);
+    }
+
+    /**
      * Stores cURL request options into $this->request_options, `CURLOPT_` are automatically prepended.
      *
      * @param string $option
