@@ -127,6 +127,7 @@ class Request
      */
     public function head($url, $request_data = array())
     {
+        $this->setRequestOption("NOBODY", 1);
         return $this->request("HEAD", $url, $request_data);
     }
 
@@ -203,15 +204,6 @@ class Request
             return;
         }
         $this->request_data = $request_data;
-    }
-
-    /**
-     * Do not fetch the body
-     * 
-     * @return void
-     */
-    public function noBody() {
-        $this->setRequestOption("NOBODY", 1);
     }
 
     /**
