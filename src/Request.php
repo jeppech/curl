@@ -49,6 +49,13 @@ class Request
     protected $handle;
 
     /**
+     * Stores request data as string
+     *
+     * @var string
+     */
+    protected $request_data;
+
+    /**
      * Stores `CURLOPT_` request options
      *
      * @var array
@@ -150,10 +157,11 @@ class Request
             $request_data = http_build_query($request_data, '', '&');
         }
 
+        $this->setPostdata($request_data);
         $this->setRequestMethod($method);
 
         if (Validate::url($url)) {
-            $this->applyRequestOptions($url, $request_data);
+            $this->applyRequestOptions($url);
         } else {
             throw new \InvalidArgumentException("$url is not a valid URL.");
         }
@@ -165,7 +173,7 @@ class Request
     }
 
     /**
-     * Attach optional header(s) to pass along with the request,
+     * Attach optional headers to pass along with the request,
      *
      * @param string|array $header
      * @param string $value
@@ -178,6 +186,23 @@ class Request
         } else {
             $this->headers[$header] = $value;
         }
+    }
+
+    /**
+     * Stores the request data in the object. If an array
+     * is passed, it will be rendered to a string.
+     *
+     * @param string|array $request_data
+     * @return void
+     */
+    public function setPostdata($request_data)
+    {
+        if (is_array($request_data)) {
+            $this->request_data = http_build_query($request_data, '', '&');
+
+            return;
+        }
+        $this->request_data = $request_data;
     }
 
     /**
@@ -278,12 +303,12 @@ class Request
      * @param  array
      * @return void
      */
-    protected function applyRequestOptions($url, $request_data)
+    protected function applyRequestOptions($url)
     {
         $this->setRequestOption("URL", $url);
 
-        if (!empty($request_data)) {
-            $this->setRequestOption("POSTFIELDS", $request_data);
+        if (!empty($this->request_data)) {
+            $this->setRequestOption("POSTFIELDS", $this->request_data);
         }
 
         $headers = array();
@@ -309,6 +334,7 @@ class Request
     {
         $this->follow_redirects = true;
         $this->request_options  = [];
+        $this->request_data     = "";
         $this->headers          = [];
 
         $this->setRequestOption("HEADER", true);
