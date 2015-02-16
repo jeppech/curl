@@ -102,10 +102,10 @@ class Response
     /**
      * Return either a specific $index of the redirects or all of them in a multidimensional array
      *
-     * @param integer $index
+     * @param integer|bool $index
      * @return array
      */
-    public function getRedirectData($index)
+    public function getRedirectData($index = false)
     {
         if (is_int($index) && isset($this->redirect_messages[$index])) {
             return $this->redirect_messages[$index];
@@ -201,7 +201,7 @@ class Response
      */
     private function getHttpHeaders(&$http_message)
     {
-        preg_match_all("/([a-z0-9-_]+):\s?(.+)\s?/im", $http_message, $headers);
+        preg_match_all("/([a-z0-9-_]+):\s?(.+)\s?/ims", $http_message, $headers);
 
         if (!empty($headers)) {
             return array_combine($headers[1], $headers[2]);
@@ -217,7 +217,7 @@ class Response
      */
     private function getHttpMessage()
     {
-        preg_match("/(HTTP\/\d\.\d.+)\r\n\r\n/ims", $this->raw_body, $http_message);
+        preg_match("/(HTTP\/\d\.\d.+)\s{2}/ims", $this->raw_body, $http_message);
 
         if (!empty($http_message)) {
             return $http_message[1];
