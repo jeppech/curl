@@ -23,7 +23,7 @@ class Response
      *
      * @var string
      */
-    protected $raw_body;
+    protected $raw;
 
     /**
      * Contains HTTP status code
@@ -60,9 +60,12 @@ class Response
      */
     protected $redirect_messages = array();
 
-    public function __construct($body)
+    /**
+     * @param string $raw Curl response
+     */
+    public function __construct($raw)
     {
-        $this->raw_body     = $body;
+        $this->raw          = $raw;
         $this->http_message = $this->getHttpMessage();
         $this->body         = $this->getMessageBody();
 
@@ -70,73 +73,37 @@ class Response
     }
 
     /**
-     * Returns HTTP status code
+     * Returns raw HTTP message.
      *
-     * @return int
+     * @return null|string
      */
-    public function getCode()
+    private function getHttpMessage()
     {
-        return $this->code;
-    }
+        preg_match_all("#(HTTP/\d\.\d.*?\R\R)#is", $this->raw, $raw_matches);
 
-    /**
-     * Return HTTP status message
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Return HTTP headers
-     *
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * Return either a specific $index of the redirects or all of them in a multidimensional array
-     *
-     * @param integer|bool $index
-     * @return array
-     */
-    public function getRedirectData($index = false)
-    {
-        if (is_int($index) && isset($this->redirect_messages[$index])) {
-            return $this->redirect_messages[$index];
+        if (!empty($raw_matches[0])) {
+            $msg = "";
+            foreach ($raw_matches[0] as $raw_msg) {
+                $msg .= $raw_msg;
+            }
+            return $msg;
         }
 
-        return $this->redirect_messages;
+        return null;
     }
 
     /**
-     * Return the number of redirects during the request.
-     *
-     * @return integer
+     * Returns the HTTP message body, by subtracting the
+     * @return string
      */
-    public function getNumberOfRedirects()
+    private function getMessageBody()
     {
-        return count($this->redirect_messages);
-    }
-
-    public function getRawHttpMessage()
-    {
-        return $this->http_message;
-    }
-
-    public function getRawBody()
-    {
-        return $this->raw_body;
+        return mb_substr($this->raw, mb_strlen($this->http_message));
     }
 
     private function parseHttpMessage()
     {
-        $messages = explode("\r\n\r\n", $this->http_message);
+        $messages = explode("\r\n\r\n", rtrim($this->http_message, "\r\n\r\n"));
 
         for ($i = 0, $n = (count($messages)-1); $i <= $n; $i++) {
             $status     = $this->getHttpStatus($messages[$i]);
@@ -184,7 +151,7 @@ class Response
      */
     private function getHttpStatus(&$http_message)
     {
-        preg_match("/(\d{3}.+)/", $http_message, $status);
+        preg_match("#HTTP/\d\.\d\s(.+)#", $http_message, $status);
 
         if (!empty($status)) {
             return $status[1];
@@ -201,34 +168,88 @@ class Response
      */
     private function getHttpHeaders(&$http_message)
     {
-        preg_match_all("/([a-z0-9-_]+):\s?(.+)\s?/ims", $http_message, $headers);
+        preg_match_all("/([A-Za-z0-9-_]+):\s?.*?$/m", $http_message, $headers);
 
         if (!empty($headers)) {
-            return array_combine($headers[1], $headers[2]);
+            return array_combine($headers[0], $headers[1]);
         }
 
         return null;
     }
 
     /**
-     * Returns raw HTTP message.
+     * Returns HTTP status code
      *
-     * @return null|string
+     * @return int
      */
-    private function getHttpMessage()
+    public function getCode()
     {
-        preg_match("/(HTTP\/\d\.\d.+)\s{2}/ims", $this->raw_body, $http_message);
-
-        if (!empty($http_message)) {
-            return $http_message[1];
-        }
-
-        return null;
+        return $this->code;
     }
 
-    private function getMessageBody()
+    /**
+     * Return HTTP status message
+     *
+     * @return string
+     */
+    public function getStatus()
     {
-        return mb_substr($this->raw_body, mb_strlen($this->http_message));
+        return $this->status;
+    }
+
+    /**
+     * Return HTTP headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Returns the raw request
+     *
+     * @return string
+     */
+    public function getRaw()
+    {
+        return $this->raw;
+    }
+
+    /**
+     * Return either a specific $index of the redirects or all of them in a multidimensional array
+     *
+     * @param integer|bool $index
+     * @return array
+     */
+    public function getRedirectData($index = false)
+    {
+        if (is_int($index) && isset($this->redirect_messages[$index])) {
+            return $this->redirect_messages[$index];
+        }
+
+        return $this->redirect_messages;
+    }
+
+    /**
+     * Return the number of redirects during the request.
+     *
+     * @return integer
+     */
+    public function getNumberOfRedirects()
+    {
+        return count($this->redirect_messages);
+    }
+
+    /**
+     * Returns raw HTTP message, including redirect messages.
+     *
+     * @return string
+     */
+    public function getRawHttpMessage()
+    {
+        return $this->http_message;
     }
 
     public function __toString()
