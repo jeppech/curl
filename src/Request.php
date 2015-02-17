@@ -320,11 +320,13 @@ class Request
 
         $this->setRequestOption("FOLLOWLOCATION", $this->follow_redirects);
         $this->setRequestOption("HTTPHEADER", $headers);
+        $this->initializeCurl();
+    }
 
+    protected function initializeCurl() {
         $this->handle = curl_init();
         curl_setopt_array($this->handle, $this->request_options);
     }
-
 
     /**
      * Resets object to default options.
@@ -333,7 +335,7 @@ class Request
      */
     protected function setPropertiesToDefaults()
     {
-        $this->follow_redirects = true;
+        $this->follow_redirects = 1;
         $this->request_options  = [];
         $this->request_data     = "";
         $this->headers          = [];
