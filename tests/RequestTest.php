@@ -1,7 +1,5 @@
 <?php
 
-use Jeppech\Curl\Request;
-
 class RequestTest extends PHPUnit_Framework_TestCase {
 
     /** @test */

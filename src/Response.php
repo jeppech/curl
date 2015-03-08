@@ -66,7 +66,7 @@ class Response
     public function __construct($raw)
     {
         $this->raw          = $raw;
-        $this->http_message = $this->getHttpMessage();
+        $this->http_message = $this->parseRawHttpMessage();
         $this->body         = $this->getMessageBody();
 
         $this->parseHttpMessage();
@@ -77,16 +77,27 @@ class Response
      *
      * @return null|string
      */
-    private function getHttpMessage()
+    private function parseRawHttpMessage()
     {
+        $messages = $this->getHttpMessages();
+
+        if (!empty($messages)) {
+            return implode("", $messages);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns array of http messages
+     *
+     * @return null|array
+     */
+    private function getHttpMessages() {
         preg_match_all("#(HTTP/\d\.\d.*?\R\R)#is", $this->raw, $raw_matches);
 
         if (!empty($raw_matches[0])) {
-            $msg = "";
-            foreach ($raw_matches[0] as $raw_msg) {
-                $msg .= $raw_msg;
-            }
-            return $msg;
+            return $raw_matches[0];
         }
 
         return null;
@@ -103,9 +114,13 @@ class Response
 
     private function parseHttpMessage()
     {
-        $messages = explode("\r\n\r\n", rtrim($this->http_message, "\r\n\r\n"));
+        $messages = $this->getHttpMessages();
 
-        for ($i = 0, $n = (count($messages)-1); $i <= $n; $i++) {
+        for ($i = 0, $n = (count($messages) - 1); $i <= $n; $i++) {
+            if (empty($messages[$i])) {
+                continue;
+            }
+
             $status     = $this->getHttpStatus($messages[$i]);
             $code       = $this->getHttpStatusCode($messages[$i]);
             $headers    = $this->getHttpHeaders($messages[$i]);
@@ -168,10 +183,10 @@ class Response
      */
     private function getHttpHeaders(&$http_message)
     {
-        preg_match_all("/([A-Za-z0-9-_]+):\s?.*?$/m", $http_message, $headers);
+        preg_match_all("/([A-Za-z0-9-_]+):\s?(.*?)$/m", $http_message, $headers);
 
         if (!empty($headers)) {
-            return array_combine($headers[0], $headers[1]);
+            return array_combine($headers[1], $headers[2]);
         }
 
         return null;
