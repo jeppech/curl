@@ -5,7 +5,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     /** @test */
     public function it_returns_a_response_object() {
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
-            ->setMethods(array('executeCurlRequest'))
+            ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
         $request->expects($this->once())
@@ -19,7 +19,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     /** @test */
     public function it_can_perform_different_types_of_http_requests() {
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
-            ->setMethods(array('executeCurlRequest'))
+            ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
         $request->expects($this->exactly(5))
@@ -41,9 +41,8 @@ class RequestTest extends PHPUnit_Framework_TestCase {
      */
     public function it_throws_exception_on_invalid_url()
     {
-
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
-                        ->setMethods(array('executeCurlRequest'))
+                        ->setMethods(array('executeCurlRequest', 'initializeCurl'))
                         ->getMock();
 
         $request->expects($this->never())
@@ -59,7 +58,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     public function it_throws_exception_on_invalid_curl_option()
     {
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
-            ->setMethods(array('executeCurlRequest'))
+            ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
         $request->expects($this->never())
@@ -78,13 +77,36 @@ class RequestTest extends PHPUnit_Framework_TestCase {
             ->method('executeCurlRequest')
             ->will($this->returnCallback(array($this, 'HttpMessageNoRedirect')));
 
-        $response = $request->get("http://onlinevind.dk");
+        $response = $request->get("http://fakesite.dk");
 
+        // HTTP status information
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals("200 OK", $response->getStatus());
 
+        // Retreive header information
         $this->assertCount(8, $response->getHeaders());
+        $this->assertEquals("nginx/1.6.2", $response->getHeaders()["Server"]);
+        $this->assertEquals("Mon, 16 Feb 2015 13:07:27 GMT", $response->getHeaders()["Date"]);
+
+        // Assert that original HTTP message is intact.
+        $this->assertEquals($this->HttpMessageNoRedirect(), $response->getRaw());
+
         $this->assertEquals(0, $response->getNumberOfRedirects());
+    }
+
+    /** @test */
+    public function it_can_get_redirect_information() {
+        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+            ->setMethods(array('executeCurlRequest', 'initializeCurl'))
+            ->getMock();
+
+        $request->expects($this->once())
+            ->method('executeCurlRequest')
+            ->will($this->returnCallback(array($this, 'HttpMessageOneRedirect')));
+
+        $response = $request->get("http://fakesite.dk");
+
+        $this->assertEquals(1, $response->getNumberOfRedirects());
     }
 
     public function HttpMessageNoRedirect() {
@@ -178,7 +200,7 @@ Set-Cookie: SERVERID=; path=/
 </body>
 </html>
 FAKEHTTP;
-}
+    }
 }
 
 //http://pastebin.com/7VVz4jMc

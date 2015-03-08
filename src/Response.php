@@ -112,7 +112,13 @@ class Response
         return mb_substr($this->raw, mb_strlen($this->http_message));
     }
 
-    private function parseHttpMessage()
+    /**
+     * Splits apart the HTTP message into their respective parts.
+     *
+     * @return array
+     * @throws \RuntimeException
+     */
+    private function explodeHttpMessage()
     {
         $messages = $this->getHttpMessages();
 
@@ -126,18 +132,14 @@ class Response
             $headers    = $this->getHttpHeaders($messages[$i]);
 
             if ($i == $n) {
-                $this->headers  = $headers;
-                $this->code     = $code;
-                $this->status   = $status;
+                $this->headers  = $this->getHttpHeaders($message_blocks[$i]);
+                $this->code     = $this->getHttpStatusCode($message_blocks[$i]);
+                $this->status   = $this->getHttpStatus($message_blocks[$i]);
 
                 continue;
             }
 
-            array_push($this->redirect_messages, array(
-                "headers"   => $headers,
-                "code"      => $code,
-                "status"    => $status
-            ));
+            array_push($this->redirect_messages, $message_blocks[$i]);
         }
     }
 
@@ -166,7 +168,7 @@ class Response
      */
     private function getHttpStatus(&$http_message)
     {
-        preg_match("#HTTP/\d\.\d\s(.+)#", $http_message, $status);
+        preg_match("#HTTP/\d\.\d\s(.*)?\R#", $http_message, $status);
 
         if (!empty($status)) {
             return $status[1];
@@ -233,18 +235,22 @@ class Response
     }
 
     /**
-     * Return either a specific $index of the redirects or all of them in a multidimensional array
+     * Returns a new Response object, containing the redirect information.
      *
-     * @param integer|bool $index
-     * @return array
+     * @param integer $index
+     * @return Response|null
      */
-    public function getRedirectData($index = false)
+    public function getRedirect($index)
     {
-        if (is_int($index) && isset($this->redirect_messages[$index])) {
-            return $this->redirect_messages[$index];
+        if (!is_int($index)) {
+            throw new \InvalidArgumentException("1st argument must be integer");
         }
 
-        return $this->redirect_messages;
+        if (isset($this->redirect_messages[$index])) {
+            return new Response($this->redirect_messages[$index]);
+        }
+
+        return null;
     }
 
     /**
@@ -265,6 +271,10 @@ class Response
     public function getRawHttpMessage()
     {
         return $this->http_message;
+    }
+
+    public function getBody() {
+        return $this->body;
     }
 
     public function __toString()
