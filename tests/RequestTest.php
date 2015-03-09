@@ -68,7 +68,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     }
 
     /** @test */
-    public function it_can_retrieve_http_information() {
+    public function it_can_parse_http_messages() {
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
             ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
