@@ -26,6 +26,13 @@ class Response
     protected $raw;
 
     /**
+     * Contains HTTP status
+     *
+     * @var string
+     */
+    protected $status;
+
+    /**
      * Contains HTTP status code
      *
      * @var int
@@ -37,7 +44,7 @@ class Response
      *
      * @var string
      */
-    protected $status;
+    protected $status_message;
 
     /**
      * Contains all response headers
@@ -116,7 +123,6 @@ class Response
      * Splits apart the HTTP message into their respective parts.
      *
      * @return array
-     * @throws \RuntimeException
      */
     private function parseHttpMessage()
     {
@@ -128,9 +134,10 @@ class Response
             }
 
             if ($i == $n) {
-                $this->headers  = $this->getHttpHeaders($messages[$i]);
-                $this->code     = $this->getHttpStatusCode($messages[$i]);
-                $this->status   = $this->getHttpStatus($messages[$i]);
+                $this->headers          = $this->getHttpHeaders($messages[$i]);
+                $this->code             = $this->getHttpStatusCode($messages[$i]);
+                $this->status_message   = $this->getHttpStatusMessage($messages[$i]);
+                $this->status           = $this->getHttpStatus($messages[$i]);
 
                 continue;
             }
@@ -156,8 +163,19 @@ class Response
         return 0;
     }
 
+    private function getHttpStatusMessage(&$http_message)
+    {
+        preg_match("/\d{3}\s(.*[^\r])\r?\n/", $http_message, $status_message);
+
+        if (!empty($status_message)) {
+            return $status_message[1];
+        }
+
+        return null;
+    }
+
     /**
-     * Return HTTP status message, when supplied with raw HTTP message
+     * Return HTTP status, when supplied with raw HTTP message
      *
      * @param string $http_message
      * @return null|string
@@ -174,7 +192,7 @@ class Response
     }
 
     /**
-     * Return associative array containing HTTP headers when supplied with raw HTTP message
+     * Return array containing a list of HTTP headers
      *
      * @param string $http_message
      * @return null|array
@@ -183,19 +201,20 @@ class Response
     {
         preg_match_all("/([A-Za-z0-9-_]+):\s?(.*?)\r?\n/m", $http_message, $headers);
 
-        if (!empty($headers)) {
-            $header_list = [];
-            foreach ($headers[1] as $index => $header) {
-                if (!isset($header_list[$header])) {
-                    $header_list[$header] = [];
-                }
-
-                array_push($header_list[$header], $headers[2][$index]);
-            }
-            return $header_list;
+        if (empty($headers)) {
+            return null;
         }
 
-        return null;
+        $header_list = [];
+        foreach ($headers[1] as $index => $header) {
+            if (!isset($header_list[$header])) {
+                $header_list[$header] = [];
+            }
+
+            array_push($header_list[$header], $headers[2][$index]);
+        }
+
+        return $header_list;
     }
 
     /**
@@ -209,7 +228,17 @@ class Response
     }
 
     /**
-     * Return HTTP status message
+     * Returns HTTP status message
+     *
+     * @return string
+     */
+    public function getStatusMessage()
+    {
+        return $this->status_message;
+    }
+
+    /**
+     * Return HTTP status
      *
      * @return string
      */
