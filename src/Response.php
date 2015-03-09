@@ -44,7 +44,7 @@ class Response
      *
      * @var array
      */
-    protected $headers = array();
+    protected $headers = [];
 
     /**
      * Raw HTTP data, without body.
@@ -58,7 +58,7 @@ class Response
      *
      * @var array
      */
-    protected $redirect_messages = array();
+    protected $redirect_messages = [];
 
     /**
      * @param string $raw Curl response
@@ -118,7 +118,7 @@ class Response
      * @return array
      * @throws \RuntimeException
      */
-    private function explodeHttpMessage()
+    private function parseHttpMessage()
     {
         $messages = $this->getHttpMessages();
 
@@ -127,19 +127,15 @@ class Response
                 continue;
             }
 
-            $status     = $this->getHttpStatus($messages[$i]);
-            $code       = $this->getHttpStatusCode($messages[$i]);
-            $headers    = $this->getHttpHeaders($messages[$i]);
-
             if ($i == $n) {
-                $this->headers  = $this->getHttpHeaders($message_blocks[$i]);
-                $this->code     = $this->getHttpStatusCode($message_blocks[$i]);
-                $this->status   = $this->getHttpStatus($message_blocks[$i]);
+                $this->headers  = $this->getHttpHeaders($messages[$i]);
+                $this->code     = $this->getHttpStatusCode($messages[$i]);
+                $this->status   = $this->getHttpStatus($messages[$i]);
 
                 continue;
             }
 
-            array_push($this->redirect_messages, $message_blocks[$i]);
+            array_push($this->redirect_messages, $messages[$i]);
         }
     }
 
@@ -168,7 +164,7 @@ class Response
      */
     private function getHttpStatus(&$http_message)
     {
-        preg_match("#HTTP/\d\.\d\s(.*)?\R#", $http_message, $status);
+        preg_match("#HTTP/\d\.\d\s(.*[^\r])\r?\n#", $http_message, $status);
 
         if (!empty($status)) {
             return $status[1];
@@ -185,10 +181,18 @@ class Response
      */
     private function getHttpHeaders(&$http_message)
     {
-        preg_match_all("/([A-Za-z0-9-_]+):\s?(.*?)$/m", $http_message, $headers);
+        preg_match_all("/([A-Za-z0-9-_]+):\s?(.*?)\r?\n/m", $http_message, $headers);
 
         if (!empty($headers)) {
-            return array_combine($headers[1], $headers[2]);
+            $header_list = [];
+            foreach ($headers[1] as $index => $header) {
+                if (!isset($header_list[$header])) {
+                    $header_list[$header] = [];
+                }
+
+                array_push($header_list[$header], $headers[2][$index]);
+            }
+            return $header_list;
         }
 
         return null;
