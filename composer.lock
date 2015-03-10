@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f5d50dec61f6212769029cb94a7197d6",
+    "hash": "a2221f4ef25bb6925f7936eafa6ffe56",
     "packages": [
         {
             "name": "jeppech/filter",
@@ -38,8 +38,9 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3.0"
+        "php": ">=5.4.0"
     },
     "platform-dev": []
 }
