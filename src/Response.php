@@ -2,7 +2,7 @@
 
 namespace Jeppech\Curl;
 
-use Jeppech\Curl\HeaderCollection;
+use Jeppech\Curl\Collections\HeaderCollection;
 
 /**
  * Description
@@ -297,7 +297,7 @@ class Response
 
     public function countHeaders()
     {
-
+        return count($this->headers);
     }
     /**
      * Returns raw HTTP message, including redirect messages.

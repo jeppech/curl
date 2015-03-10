@@ -1,14 +1,17 @@
 <?php
 
-namespace Jeppech\Curl;
+namespace Jeppech\Curl\Collections;
 
 class HeaderCollection implements \ArrayAccess, \Countable {
 
+    /**
+     * Hold headers in a multidimensional array
+     *
+     * @var array
+     */
     protected $collection;
 
     /**
-     *
-     *
      * @param string $offset
      * @param mixed $value
      * @return bool|void
@@ -29,6 +32,10 @@ class HeaderCollection implements \ArrayAccess, \Countable {
         return true;
     }
 
+    /**
+     * @param string $offset
+     * @return bool|array
+     */
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -38,16 +45,27 @@ class HeaderCollection implements \ArrayAccess, \Countable {
         return false;
     }
 
+    /**
+     * @param string $offset
+     * @return bool
+     */
     public function offsetExists($offset)
     {
         return isset($this->collection[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     * @return void
+     */
     public function offsetUnset($offset)
     {
         unset($this->collection[$offset]);
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return (count($this->collection, 1) - count($this->collection));
