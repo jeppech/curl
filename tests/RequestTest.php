@@ -75,38 +75,36 @@ class RequestTest extends PHPUnit_Framework_TestCase {
 
         $request->expects($this->once())
             ->method('executeCurlRequest')
-            ->will($this->returnCallback(array($this, 'HttpMessageNoRedirect')));
-
-        $response = $request->get("http://fakesite.dk");
-
-        // HTTP status information
-        $this->assertEquals(200, $response->getCode());
-        $this->assertEquals("200 OK", $response->getStatus());
-
-        // Retreive header information
-        $this->assertCount(8, $response->getHeaders());
-        $this->assertEquals("nginx/1.6.2", $response->getHeaders()["Server"]);
-        $this->assertEquals("Mon, 16 Feb 2015 13:07:27 GMT", $response->getHeaders()["Date"]);
-
-        // Assert that original HTTP message is intact.
-        $this->assertEquals($this->HttpMessageNoRedirect(), $response->getRaw());
-
-        $this->assertEquals(0, $response->getNumberOfRedirects());
-    }
-
-    /** @test */
-    public function it_can_get_redirect_information() {
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
-            ->setMethods(array('executeCurlRequest', 'initializeCurl'))
-            ->getMock();
-
-        $request->expects($this->once())
-            ->method('executeCurlRequest')
             ->will($this->returnCallback(array($this, 'HttpMessageOneRedirect')));
 
         $response = $request->get("http://fakesite.dk");
+        $res_header = $response->getHeaders();
 
-        $this->assertEquals(1, $response->getNumberOfRedirects());
+        // HTTP status information
+        $this->assertEquals(200, $response->getCode());
+        $this->assertEquals("OK", $response->getStatusMessage());
+        $this->assertEquals("200 OK", $response->getStatus());
+
+        // Retreive header information
+        $this->assertCount(13, $res_header);
+        $this->assertContains("Apache", $res_header["Server"]);
+        $this->assertContains("Tue, 17 Feb 2015 20:20:48 GMT", $res_header["Date"]);
+
+        // Assert that original HTTP message is intact.
+        $this->assertEquals($this->HttpMessageOneRedirect(), $response->getRaw());
+        $this->assertEquals(1, $response->countRedirects());
+
+        $redirect = $response->getRedirect(0);
+        $red_header = $redirect->getHeaders();
+
+        $this->assertInstanceOf("Jeppech\\Curl\\Response", $redirect);
+        $this->assertInstanceOf("Jeppech\\Curl\\HeaderCollection", $red_header);
+        $this->assertEquals(303, $redirect->getCode());
+        $this->assertEquals("See other", $redirect->getStatusMessage());
+        $this->assertEquals("303 See other", $redirect->getStatus());
+        $this->assertContains("Tue, 17 Feb 2015 20:20:48 GMT", $red_header["Date"]);
+        $this->assertContains("5e8627afafd16a920dac4dbb644715a5=ue1gprimq6rb5r4qsb8sk28jb2; path=/; HttpOnly", $red_header["Set-Cookie"]);
+        $this->assertContains("SERVERID=; path=/", $red_header["Set-Cookie"]);
     }
 
     public function HttpMessageNoRedirect() {
