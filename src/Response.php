@@ -2,6 +2,8 @@
 
 namespace Jeppech\Curl;
 
+use Jeppech\Curl\HeaderCollection;
+
 /**
  * Description
  *
@@ -49,9 +51,9 @@ class Response
     /**
      * Contains all response headers
      *
-     * @var array
+     * @var HeaderCollection
      */
-    protected $headers = [];
+    protected $headers;
 
     /**
      * Raw HTTP data, without body.
@@ -74,7 +76,7 @@ class Response
     {
         $this->raw          = $raw;
         $this->http_message = $this->parseRawHttpMessage();
-        $this->body         = $this->getMessageBody();
+        $this->body         = $this->parseMessageBody();
 
         $this->parseHttpMessage();
     }
@@ -86,7 +88,7 @@ class Response
      */
     private function parseRawHttpMessage()
     {
-        $messages = $this->getHttpMessages();
+        $messages = $this->parseHttpMessages();
 
         if (!empty($messages)) {
             return implode("", $messages);
@@ -100,7 +102,7 @@ class Response
      *
      * @return null|array
      */
-    private function getHttpMessages() {
+    private function parseHttpMessages() {
         preg_match_all("#(HTTP/\d\.\d.*?\R\R)#is", $this->raw, $raw_matches);
 
         if (!empty($raw_matches[0])) {
@@ -114,7 +116,7 @@ class Response
      * Returns the HTTP message body, by subtracting the
      * @return string
      */
-    private function getMessageBody()
+    private function parseMessageBody()
     {
         return mb_substr($this->raw, mb_strlen($this->http_message));
     }
@@ -126,7 +128,7 @@ class Response
      */
     private function parseHttpMessage()
     {
-        $messages = $this->getHttpMessages();
+        $messages = $this->parseHttpMessages();
 
         for ($i = 0, $n = (count($messages) - 1); $i <= $n; $i++) {
             if (empty($messages[$i])) {
@@ -134,10 +136,10 @@ class Response
             }
 
             if ($i == $n) {
-                $this->headers          = $this->getHttpHeaders($messages[$i]);
-                $this->code             = $this->getHttpStatusCode($messages[$i]);
-                $this->status_message   = $this->getHttpStatusMessage($messages[$i]);
-                $this->status           = $this->getHttpStatus($messages[$i]);
+                $this->headers          = $this->parseHttpHeaders($messages[$i]);
+                $this->code             = $this->parseHttpStatusCode($messages[$i]);
+                $this->status_message   = $this->parseHttpStatusMessage($messages[$i]);
+                $this->status           = $this->parseHttpStatus($messages[$i]);
 
                 continue;
             }
@@ -152,7 +154,7 @@ class Response
      * @param string $http_message
      * @return integer
      */
-    private function getHttpStatusCode(&$http_message)
+    private function parseHttpStatusCode(&$http_message)
     {
         preg_match("/HTTP\/\d\.\d\s(\d{3})/", $http_message, $code);
 
@@ -163,7 +165,7 @@ class Response
         return 0;
     }
 
-    private function getHttpStatusMessage(&$http_message)
+    private function parseHttpStatusMessage(&$http_message)
     {
         preg_match("/\d{3}\s(.*[^\r])\r?\n/", $http_message, $status_message);
 
@@ -180,7 +182,7 @@ class Response
      * @param string $http_message
      * @return null|string
      */
-    private function getHttpStatus(&$http_message)
+    private function parseHttpStatus(&$http_message)
     {
         preg_match("#HTTP/\d\.\d\s(.*[^\r])\r?\n#", $http_message, $status);
 
@@ -197,7 +199,7 @@ class Response
      * @param string $http_message
      * @return null|array
      */
-    private function getHttpHeaders(&$http_message)
+    private function parseHttpHeaders(&$http_message)
     {
         preg_match_all("/([A-Za-z0-9-_]+):\s?(.*?)\r?\n/m", $http_message, $headers);
 
@@ -205,16 +207,13 @@ class Response
             return null;
         }
 
-        $header_list = [];
-        foreach ($headers[1] as $index => $header) {
-            if (!isset($header_list[$header])) {
-                $header_list[$header] = [];
-            }
+        $header_collection = new HeaderCollection();
 
-            array_push($header_list[$header], $headers[2][$index]);
+        foreach ($headers[1] as $index => $header) {
+            $header_collection[$header] = $headers[2][$index];
         }
 
-        return $header_list;
+        return $header_collection;
     }
 
     /**
@@ -291,11 +290,15 @@ class Response
      *
      * @return integer
      */
-    public function getNumberOfRedirects()
+    public function countRedirects()
     {
         return count($this->redirect_messages);
     }
 
+    public function countHeaders()
+    {
+
+    }
     /**
      * Returns raw HTTP message, including redirect messages.
      *
