@@ -23,7 +23,14 @@
         <ini name="memory_limit" value="2048M" />
         <ini name="xdebug.max_nesting_level" value="500" />
     </php>
-
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../src</directory>
+            <exclude>
+                <directory>../vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
     <logging>
         <log type="coverage-html" target="../build/coverage"/>
         <log type="coverage-clover" target="../build/logs/clover.xml"/>
