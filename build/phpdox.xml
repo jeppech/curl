@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpdox xmlns="http://phpdox.net/config">
-    <project name="Curl" source="../src" workdir="build/phpdox">
+    <project name="Curl" source="../src" workdir="phpdox">
         <collector publiconly="false">
             <include mask="*.php" />
         </collector>
 
-        <generator output="build">
+        <generator output="./">
             <build engine="html" enabled="true" output="api">
                 <file extension="html" />
             </build>
