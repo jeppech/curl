@@ -16,7 +16,10 @@ class RequestTest extends PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf('Jeppech\\Curl\\Response', $response);
     }
-
+    /** @test */
+    public function _it_fails() {
+        $this->assertTrue(false);
+    }
     /** @test */
     public function it_can_perform_different_types_of_http_requests() {
 
