@@ -9,8 +9,8 @@
     ],
     "repositories": [
         {
-            "type": "vcs",
-            "url": "http://git.codr.dk:2201/jeppech/filter.git"
+            "type": "composer",
+            "url": "http://satis.codr.dk"
         }
     ],
     "require": {

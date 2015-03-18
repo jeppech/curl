@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a2221f4ef25bb6925f7936eafa6ffe56",
+    "hash": "514c655f89ccfebf11be98ca94239177",
     "packages": [
         {
             "name": "jeppech/filter",
@@ -13,6 +13,12 @@
                 "type": "git",
                 "url": "http://git.codr.dk:2201/jeppech/filter.git",
                 "reference": "1a20063cfeee7ea29c96ab08f1932b6a0c976144"
+            },
+            "dist": {
+                "type": "tar",
+                "url": "http://satis.codr.dk/packages/jeppech-filter-v0.1.0-b7e635.tar",
+                "reference": "1a20063cfeee7ea29c96ab08f1932b6a0c976144",
+                "shasum": "1c3418d85917039ae71e1d98d93748b69572a80b"
             },
             "require": {
                 "php": ">=5.3.0"
@@ -38,7 +44,6 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
-    "prefer-lowest": false,
     "platform": {
         "php": ">=5.4.0"
     },
