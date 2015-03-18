@@ -11,10 +11,6 @@
         {
             "type": "vcs",
             "url": "http://git.codr.dk:2201/jeppech/filter.git"
-        },
-        {
-            "type": "vcs",
-            "url": "http://git.codr.dk:2201/jeppech/curl.git"
         }
     ],
     "require": {
