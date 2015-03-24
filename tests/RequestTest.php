@@ -18,11 +18,6 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     }
 
     /** @test */
-    public function it_fails() {
-        $this->assertTrue(false);
-    }
-
-    /** @test */
     public function it_can_perform_different_types_of_http_requests() {
 
         $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
