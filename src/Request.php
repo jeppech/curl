@@ -42,6 +42,20 @@ class Request
     protected $headers = array();
 
     /**
+     * HTTP Username
+     *
+     * @var string
+     */
+    protected $username;
+
+    /**
+     * HTTP Password
+     *
+     * @var
+     */
+    protected $password;
+
+    /**
      * Contains resource handle for the cURL request
      *
      * @var resource
@@ -252,6 +266,18 @@ class Request
     public function setReferer($referer)
     {
         $this->referer = $referer;
+    }
+
+    /**
+     * Sets basic authentication credentials.
+     *
+     * @param string $username
+     * @param string $password
+     * @reurn void
+     */
+    public function setBasicAuth($username, $password)
+    {
+        $this->setRequestOption("USERPWD", $username.":".$password);
     }
 
     /**
