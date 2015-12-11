@@ -309,16 +309,12 @@ class Request
                 $this->setRequestOption("POST", true);
                 break;
 
-            case 'PUT':
-                $this->setRequestOption("PUT", true);
-                break;
-
             case 'HEAD':
                 $this->setRequestOption("NOBODY", true);
                 break;
 
             default:
-                $this->setRequestOption("CUSTOMREQUEST", $method);
+                $this->setRequestOption("CUSTOMREQUEST", strtoupper($method));
                 break;
         }
     }
