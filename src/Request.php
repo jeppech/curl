@@ -212,7 +212,15 @@ class Request
      */
     public function setPostdata($request_data)
     {
-        if (is_array($request_data)) {
+        json_decode($request_data);
+
+        if (json_last_error() == JSON_ERROR_NONE)
+        {
+            $this->setHeaders([
+                "Content-Type"      => "application/json",
+                "Content-Length"    => strlen($request_data)]
+            );
+        } else if (is_array($request_data)) {
             $this->request_data = http_build_query($request_data, '', '&');
 
             return;
