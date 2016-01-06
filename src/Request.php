@@ -1,8 +1,8 @@
 <?php
 
-namespace Jeppech\Curl;
+namespace Codr\Curl;
 
-use Jeppech\Filter\Validate;
+use Codr\Filter\Validate;
 
 /**
  * Description

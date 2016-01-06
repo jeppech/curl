@@ -5,7 +5,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     /** @test */
     public function it_returns_a_response_object() {
 
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+        $request = $this->getMockBuilder('Codr\\Curl\\Request')
             ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
@@ -14,13 +14,13 @@ class RequestTest extends PHPUnit_Framework_TestCase {
 
         $response = $request->get('http://somewebsite.com');
 
-        $this->assertInstanceOf('Jeppech\\Curl\\Response', $response);
+        $this->assertInstanceOf('Codr\\Curl\\Response', $response);
     }
 
     /** @test */
     public function it_can_perform_different_types_of_http_requests() {
 
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+        $request = $this->getMockBuilder('Codr\\Curl\\Request')
             ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
@@ -43,7 +43,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
      */
     public function it_throws_exception_on_invalid_url()
     {
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+        $request = $this->getMockBuilder('Codr\\Curl\\Request')
                         ->setMethods(array('executeCurlRequest', 'initializeCurl'))
                         ->getMock();
 
@@ -59,7 +59,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
      */
     public function it_throws_exception_on_invalid_curl_option()
     {
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+        $request = $this->getMockBuilder('Codr\\Curl\\Request')
             ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
@@ -71,7 +71,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
 
     /** @test */
     public function it_can_parse_http_messages() {
-        $request = $this->getMockBuilder('Jeppech\\Curl\\Request')
+        $request = $this->getMockBuilder('Codr\\Curl\\Request')
             ->setMethods(array('executeCurlRequest', 'initializeCurl'))
             ->getMock();
 
@@ -82,8 +82,8 @@ class RequestTest extends PHPUnit_Framework_TestCase {
         $response = $request->get("http://fakesite.dk");
         $response_headers = $response->getHeaders();
 
-        $this->assertInstanceOf("Jeppech\\Curl\\Response", $response);
-        $this->assertInstanceOf("Jeppech\\Curl\\Collections\\HeaderCollection", $response_headers);
+        $this->assertInstanceOf("Codr\\Curl\\Response", $response);
+        $this->assertInstanceOf("Codr\\Curl\\Collections\\HeaderCollection", $response_headers);
 
         // HTTP status information
         $this->assertEquals(200, $response->getCode());
@@ -102,7 +102,7 @@ class RequestTest extends PHPUnit_Framework_TestCase {
         $redirect = $response->getRedirect(0);
 
         // Assert that getRedirect returns Response object
-        $this->assertInstanceOf("Jeppech\\Curl\\Response", $redirect);
+        $this->assertInstanceOf("Codr\\Curl\\Response", $redirect);
 
         $redirect_headers = $redirect->getHeaders();
 

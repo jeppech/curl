@@ -26,7 +26,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Jeppech\\Filter\\": "src/"
+                    "Codr\\Filter\\": "src/"
                 }
             },
             "authors": [
