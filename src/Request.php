@@ -212,7 +212,13 @@ class Request
      */
     public function setPostdata($request_data)
     {
-        if (is_array($request_data)) {
+        if ($this->isJSON($request_data))
+        {
+            $this->setHeaders([
+                "Content-Type"      => "application/json",
+                "Content-Length"    => strlen($request_data)]
+            );
+        } else if (is_array($request_data)) {
             $this->request_data = http_build_query($request_data, '', '&');
 
             return;
@@ -382,5 +388,12 @@ class Request
             $cURL = curl_version();
             return "cURL/{$cURL["version"]} PHP/".PHP_VERSION." (jeppech/curl)";
         }
+    }
+
+    private function isJSON($string)
+    {
+        return  is_string($string) && is_array(json_decode($string, true)) && 
+                (json_last_error() == JSON_ERROR_NONE)
+                ? true : false;
     }
 }

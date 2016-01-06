@@ -266,6 +266,38 @@ class Response
         return $this->raw;
     }
 
+    /** 
+    * Return response body
+    *
+    * @return mixed
+    */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+    * Returns array, if response body can be parsed as one.
+    *
+    * @return array
+    */
+    public function getArray()
+    {
+        if (is_array($this->body))
+        {
+            return $this->body;
+        }
+
+        $data = json_decode($this->body, true);
+
+        if (json_last_error() == JSON_ERROR_NONE)
+        {
+            return $data;
+        }
+
+        return false;
+    }
+
     /**
      * Returns a new Response object, containing the redirect information.
      *
@@ -307,10 +339,6 @@ class Response
     public function getRawHttpMessage()
     {
         return $this->http_message;
-    }
-
-    public function getBody() {
-        return $this->body;
     }
 
     public function __toString()
