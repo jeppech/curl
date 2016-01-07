@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "jeppech/filter": "0.1.*",
+        "jeppech/filter": "dev-development",
         "php": ">=5.4.0"
     },
     "require-dev": {
@@ -25,5 +25,6 @@
             "Jeppech\\Curl\\": "src/",
             "Jeppech\\Curl\\Collections\\": "src/Collections/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
