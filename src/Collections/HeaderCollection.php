@@ -1,6 +1,6 @@
 <?php
 
-namespace Jeppech\Curl\Collections;
+namespace Codr\Curl\Collections;
 
 class HeaderCollection extends Collection
 {

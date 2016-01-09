@@ -6,7 +6,7 @@
  * Time: 12:50
  */
 
-namespace Jeppech\Curl\Collections;
+namespace Codr\Curl\Collections;
 
 
 class Collection implements \ArrayAccess, \Countable
