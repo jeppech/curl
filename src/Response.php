@@ -1,8 +1,8 @@
 <?php
 
-namespace Jeppech\Curl;
+namespace Codr\Curl;
 
-use Jeppech\Curl\Collections\HeaderCollection;
+use Codr\Curl\Collections\HeaderCollection;
 
 /**
  * Description
