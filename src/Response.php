@@ -217,6 +217,18 @@ class Response
     }
 
     /**
+     * Returns true if the HTTP code matches 2xx
+     *
+     * @return boolean
+     */
+    public function isOK() {
+        if (preg_match("/2\d{2}/", $this->code))
+            return true;
+        
+        return false;
+    }
+
+    /**
      * Returns HTTP status code
      *
      * @return int
