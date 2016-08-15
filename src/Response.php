@@ -1,8 +1,8 @@
 <?php
 
-namespace Codr\Curl;
+namespace Jeppech\Curl;
 
-use Codr\Curl\Collections\HeaderCollection;
+use Jeppech\Curl\Collections\HeaderCollection;
 
 /**
  * Description
@@ -214,6 +214,18 @@ class Response
         }
 
         return $header_collection;
+    }
+
+    /**
+     * Returns true if the HTTP code matches 2xx
+     *
+     * @return boolean
+     */
+    public function isOK() {
+        if (preg_match("/2\d{2}/", $this->code))
+            return true;
+        
+        return false;
     }
 
     /**

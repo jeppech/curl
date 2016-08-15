@@ -1,5 +1,5 @@
 {
-    "name": "codr/curl",
+    "name": "jeppech/curl",
     "description": "Curl wrapper",
     "authors": [
         {
@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "codr/filter": "~0.1.0",
+        "jeppech/filter": "~0.1.0",
         "php": ">=5.4.0"
     },
     "require-dev": {
@@ -22,8 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Codr\\Curl\\": "src/",
-            "Codr\\Curl\\Collections\\": "src/Collections/"
+            "Jeppech\\Curl\\": "src/",
+            "Jeppech\\Curl\\Collections\\": "src/Collections/"
         }
     },
     "minimum-stability": "dev"
