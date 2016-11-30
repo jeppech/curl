@@ -214,16 +214,17 @@ class Request
     {
         if ($this->isJSON($request_data))
         {
-            $this->setHeaders([
-                "Content-Type"      => "application/json",
-                "Content-Length"    => strlen($request_data)]
-            );
+            $this->setHeaders("Content-Type", "application/json");
+            $this->request_data = $request_data;
         } else if (is_array($request_data)) {
+            $this->setHeaders("Content-Type", "application/x-www-form-urlencoded");
             $this->request_data = http_build_query($request_data, '', '&');
-
-            return;
+        } else if ($request_data) {
+           $this->request_data = $request_data;
         }
-        $this->request_data = $request_data;
+
+        $this->setHeaders("Content-Length",strlen($this->request_data));
+        return;
     }
 
     /**
