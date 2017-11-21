@@ -2,6 +2,7 @@
 
 namespace Jeppech\Curl;
 
+use Jeppech\Curl\Exceptions\CurlRequestException;
 use Jeppech\Filter\Validate;
 
 /**
@@ -289,11 +290,13 @@ class Request
 
     /**
      * Executes and stores curl request.
-     *
+     * @throws CurlRequestException
      * @return string
      */
     protected function executeCurlRequest() {
-        $response = curl_exec($this->handle);
+        if (!$response = curl_exec($this->handle)) {
+            throw new CurlRequestException(curl_error($this->handle));
+        }
         curl_close($this->handle);
 
         return $response;
