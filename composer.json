@@ -7,12 +7,6 @@
             "email": "jeppe@codr.dk"
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "http://satis.codr.dk"
-        }
-    ],
     "require": {
         "codr/filter": "^1.0",
         "php": ">=5.4.0"
